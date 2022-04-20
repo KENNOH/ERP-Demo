@@ -1,8 +1,11 @@
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 from .models import CustomerNames
 from .tables import CustomerTable
 from django_tables2 import RequestConfig
 from django.core.paginator import Paginator
+from .forms import AddCustomerForm
+from django.template.context_processors import csrf
+from django.contrib import messages
 # Create your views here.
 
 
@@ -12,14 +15,14 @@ def index(request):
     name = 'My name is tech'
 
     """Queryset fetching all the data for customernames"""
-    customer_names_set = CustomerNames.objects.all().order_by('created_on')
+    customer_names_set = CustomerNames.objects.all().order_by('-created_on')
 
     """DJango Tables module"""
     customer_table = CustomerTable(customer_names_set)
     RequestConfig(request,paginate={'per_page':3}).configure(customer_table)
 
     """This is a custom table pagination module"""
-    paginator = Paginator(customer_names_set,3)
+    paginator = Paginator(customer_names_set,10)
     page_number = request.GET.get('page')
     paginator_module = paginator.get_page(page_number)
 
@@ -28,5 +31,26 @@ def index(request):
     args = {'name':name,'calc':calc,'customer_names_queryset':customer_names_set,'customer_table':customer_table,
     'paginator_module':paginator_module}
     return render(request,'home/index.html',args)
+
+
+def add_customers(request):
+    if request.method == 'POST':
+        form = AddCustomerForm(request.POST)
+        if form.is_valid():
+            form_instance = form.save(commit=False)
+            form_instance.save()
+            messages.add_message(request, messages.SUCCESS, 'Your data has been collected and submitted successfully.')
+            return redirect('index')
+        else:
+            args = {'form':form}
+            return render(request,'home/add-customer.html',args)
+    else:
+        form = AddCustomerForm()
+        args = {'form':form}
+        args.update(csrf(request))
+        return render(request,'home/add-customer.html',args)
+
+
+
 
 

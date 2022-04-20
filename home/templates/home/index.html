@@ -18,7 +18,38 @@
 <!--This is a dynamic variable passed the views.py to show a sum of 2 integers-->
 <p>{{calc}}</p>
 
+{% block content %}
+
+{% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    
+      {% if message.tags == 'error' %}
+        <div class="bg-danger">
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        </div>
+      {% endif %}
+
+      {% if message.tags == 'success' %}
+        <div class="bg-success">
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        </div>
+      {% endif %}
+    
+      {% if message.tags == 'info' %}
+        <div class="bg-info">
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        </div>
+      {% endif %}
+
+    {% endfor %}
+</ul>
+{% endif %}
+
 <h3>Customer Names</h3>
+<a href="{% url 'add_customers' %}">
+  <button class="btn btn-success">Add Customer</button>
+</a>
 <table class="table table-striped">
     <thead>
       <tr>
@@ -63,10 +94,6 @@
     </span>
 </div>
 <br><br>
-
-<h3>Customer Names Rendered using Django Tables</h3>
-<table>
-    {% render_table customer_table %}
-</table>
+{% endblock %}
 </body>
 </html> 

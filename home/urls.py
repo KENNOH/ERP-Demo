@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [
+    url(r'^add-customers/',views.add_customers,name='add_customers'),
     url(r'^',views.index,name='index'),
 ]
 
