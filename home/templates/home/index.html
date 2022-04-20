@@ -32,7 +32,7 @@
       </tr>
     </thead>
     <tbody>
-    {% for customer in customer_names_queryset %}
+    {% for customer in paginator_module %}
       <tr>
         <th scope="row">{{customer.id}}</th>
         <td>{{customer.name}}</td>
