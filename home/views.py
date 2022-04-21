@@ -3,7 +3,7 @@ from .models import CustomerNames
 from .tables import CustomerTable
 from django_tables2 import RequestConfig
 from django.core.paginator import Paginator
-from .forms import AddCustomerForm
+from .forms import AddCustomerForm, UpdateCustomerForm
 from django.template.context_processors import csrf
 from django.contrib import messages
 # Create your views here.
@@ -52,5 +52,31 @@ def add_customers(request):
 
 
 
+def update_customer(request,id):
+    instance  = CustomerNames.objects.get(id=id)
+    if request.method == 'POST':
+        form  = UpdateCustomerForm(request.POST,instance=instance)
+        if form.is_valid():
+            form_instance = form.save(commit=False)
+            name = form.cleaned_data['name']
+            form.instance.name = name.upper()
+            form_instance.save()
+            messages.add_message(request, messages.SUCCESS, 'Your data has been updated successfully.')
+            return redirect('index')
+        else:
+            args = {'form':form}
+            return render(request, 'home/update-customer.html',args)
+    else:
+        form  = UpdateCustomerForm(instance=instance)
+        args = {'form':form}
+        args.update(csrf(request))
+        return render(request,'home/update-customer.html',args)
 
+
+
+def delete_customer(request,id):
+    instance = CustomerNames.objects.get(id=id)
+    instance.delete()
+    messages.add_message(request, messages.INFO,'Customer has been deleted successfully.')
+    return redirect('index')
 
