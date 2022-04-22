@@ -1,3 +1,4 @@
+from ast import keyword
 from django.shortcuts import redirect, render
 from .models import CustomerNames
 from .tables import CustomerTable
@@ -6,6 +7,8 @@ from django.core.paginator import Paginator
 from .forms import AddCustomerForm, UpdateCustomerForm
 from django.template.context_processors import csrf
 from django.contrib import messages
+from django.db.models import Q
+from datetime import datetime
 # Create your views here.
 
 
@@ -59,7 +62,7 @@ def update_customer(request,id):
         if form.is_valid():
             form_instance = form.save(commit=False)
             name = form.cleaned_data['name']
-            form.instance.name = name.upper()
+            form_instance.name = name.upper()
             form_instance.save()
             messages.add_message(request, messages.SUCCESS, 'Your data has been updated successfully.')
             return redirect('index')
@@ -80,3 +83,38 @@ def delete_customer(request,id):
     messages.add_message(request, messages.INFO,'Customer has been deleted successfully.')
     return redirect('index')
 
+
+
+def search_customers(request):
+    search_keyword = request.GET['customer_search']
+    if search_keyword != '':
+        searched_queryset = CustomerNames.objects.all().filter(
+        Q(name__icontains=search_keyword) | Q(email__icontains=search_keyword) | Q(gender__iexact=search_keyword) |
+        Q(phone_number__icontains=search_keyword) | Q(occupation__icontains=search_keyword)| Q(balance__icontains=search_keyword)
+        ).order_by('-created_on')
+
+        """Date search"""
+        # converted_keyword = datetime.strptime(search_keyword, '%m %d %Y')
+        # searched_queryset = CustomerNames.objects.all().filter(created_on__gte=converted_keyword)
+
+        """Search by greater than or equal to the value provide in search"""
+        # searched_queryset = CustomerNames.objects.all().filter(balance__gte=search_keyword)
+        
+        """Search by greater than strictly to the value provide in search"""
+        # searched_queryset = CustomerNames.objects.all().filter(balance__gt=search_keyword)
+
+        """Search by less than or equal to to the value provide in search"""
+        # searched_queryset = CustomerNames.objects.all().filter(balance__lte=search_keyword)
+
+        """Search by less than strictly to the value provide in search"""
+        # searched_queryset = CustomerNames.objects.all().filter(balance__lt=search_keyword)
+
+        """This is a custom table pagination module"""
+        paginator = Paginator(searched_queryset,10)
+        page_number = request.GET.get('page')
+        paginator_module = paginator.get_page(page_number)
+        args = {'paginator_module':paginator_module,'search_keyword':search_keyword}
+
+        return render(request,'home/index.html',args)
+    else:
+        return redirect('index')

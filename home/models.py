@@ -17,9 +17,9 @@ class CustomerNames(models.Model):
         ('MINOR','MINOR'),
     )
     GENDER_CHOICES = (
-        ('M','Male'),
-        ('F','Female'),
-        ('O','Others'),
+        ('Male','Male'),
+        ('Female','Female'),
+        ('Others','Others'),
     )
     name = models.CharField(max_length=255,null=True,blank=True)
     email = models.EmailField(max_length=150,unique=True)

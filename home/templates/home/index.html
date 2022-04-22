@@ -51,6 +51,11 @@
 </ul>
 {% endif %}
 <h3>Customer Names</h3>
+<form action="{% url 'search_customers' %}" method="GET"> {% csrf_token %}
+  <input type="search" id="customer_search" name="customer_search" value="{{search_keyword}}">
+  <button type="submit" class="btn btn-info">Submit</button>
+</form>
+<br>
 <a href="{% url 'add_customers' %}">
   <button class="btn btn-success">Add Customer</button>
 </a>
@@ -61,6 +66,7 @@
         <th scope="col">Name</th>
         <th scope="col">Email</th>
         <th scope="col">Balance</th>
+        <th scope="col">Gender</th>
         <th scope="col">Occupation</th>
         <th scope="col">Phone Number</th>
         <th scope="col">Created On</th>
@@ -75,6 +81,7 @@
         <td>{{customer.name}}</td>
         <td>{{customer.email}}</td>
         <td>{{customer.balance}}</td>
+        <td>{{customer.gender}}</td>
         <td>{{customer.occupation}}</td>
         <td>{{customer.phone_number}}</td>
         <td>{{customer.created_on}}</td>
