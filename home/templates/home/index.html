@@ -22,6 +22,12 @@
 <p>{{calc}}</p>
 <a href="{% url 'index' %}">Home</a>
 <br><br>
+<a href="{% url 'register_user' %}">
+  <button class="btn btn-warning">Sign Up</button>
+</a>
+<a href="{% url 'sign_in' %}">
+  <button class="btn btn-success">Sign In</button>
+</a>
 
 {% block content %}
 
