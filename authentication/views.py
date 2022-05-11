@@ -3,7 +3,7 @@ from django.contrib import messages
 from django.template.context_processors import csrf
 from .forms import  UserRegistrationForm,UserLoginForm
 from django.contrib.auth.models import User
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 
 
 def register_user(request):
@@ -52,3 +52,8 @@ def sign_in(request):
         args = {'form':form}
         args.update(csrf(request))
         return render(request,'authentication/login-user.html',args)
+
+
+def sign_out(request):
+    logout(request)
+    return redirect('index')

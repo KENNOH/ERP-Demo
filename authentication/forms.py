@@ -33,5 +33,7 @@ class UserLoginForm(forms.Form):
         user_object = User.objects.filter(Q(username__iexact=username))
         user = user_object.first()
         if user == None:
-            raise forms.ValidationError("Incorrect password")
+            raise forms.ValidationError("Incorrect user or password entered")
+        if not user.check_password(password):
+            raise forms.ValidationError("Incorrect password or password entered")
         return super(UserLoginForm,self).clean(*args,**kwargs)

@@ -9,6 +9,7 @@ from django.template.context_processors import csrf
 from django.contrib import messages
 from django.db.models import Q
 from datetime import datetime
+from django.contrib.auth.decorators import login_required
 # Create your views here.
 
 
@@ -36,6 +37,7 @@ def index(request):
     return render(request,'home/index.html',args)
 
 
+@login_required(login_url='/sign-in/')
 def add_customers(request):
     if request.method == 'POST':
         form = AddCustomerForm(request.POST)
@@ -54,7 +56,7 @@ def add_customers(request):
         return render(request,'home/add-customer.html',args)
 
 
-
+@login_required(login_url='/sign-in/')
 def update_customer(request,id):
     instance  = CustomerNames.objects.get(id=id)
     if request.method == 'POST':
@@ -76,7 +78,7 @@ def update_customer(request,id):
         return render(request,'home/update-customer.html',args)
 
 
-
+@login_required(login_url='/sign-in/')
 def delete_customer(request,id):
     instance = CustomerNames.objects.get(id=id)
     instance.delete()

@@ -22,12 +22,20 @@
 <p>{{calc}}</p>
 <a href="{% url 'index' %}">Home</a>
 <br><br>
+
+{% if user.is_authenticated %}
+<p>{{user.first_name}} {{user.last_name}}</p>
+<a href="{% url 'sign_out' %}">
+  <button class="btn btn-success">Sign out</button>
+</a>
+{% else %}
 <a href="{% url 'register_user' %}">
   <button class="btn btn-warning">Sign Up</button>
 </a>
 <a href="{% url 'sign_in' %}">
   <button class="btn btn-success">Sign In</button>
 </a>
+{% endif %}
 
 {% block content %}
 
