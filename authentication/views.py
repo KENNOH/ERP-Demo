@@ -57,3 +57,9 @@ def sign_in(request):
 def sign_out(request):
     logout(request)
     return redirect('index')
+
+
+
+def password_reset_complete(request):
+    messages.add_message(request, messages.SUCCESS, 'You have reset your password successfully.')
+    return redirect('index')

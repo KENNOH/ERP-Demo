@@ -139,13 +139,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
 """Email credentials for DJango provision for sending mails"""
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_USE_TLS = True
+EMAIL_HOST = config('HOST')
 EMAIL = config('EMAIL')
-EMAIL_HOST = config('EMAIL_HOST')
-EMAIL_HOST_USER = EMAIL
-DEFAULT_FROM_EMAIL  = EMAIL
-EMAIL_HOST_PASSWORD =  config('EMAIL_HOST_PASSWORD')
-EMAIL_PORT = config('EMAIL_PORT')
-
-
+EMAIL_HOST_USER = config('USERNAME')
+EMAIL_HOST_PASSWORD = config('PASSWORD')
+DEFAULT_FROM_EMAIL = EMAIL
+EMAIL_PORT = config('PORT')

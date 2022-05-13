@@ -10,6 +10,7 @@ from django.contrib import messages
 from django.db.models import Q
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
+from .utils import send_confirmation_email
 # Create your views here.
 
 
@@ -67,6 +68,12 @@ def update_customer(request,id):
             form_instance.name = name.upper()
             form_instance.save()
             messages.add_message(request, messages.SUCCESS, 'Your data has been updated successfully.')
+            email = form.cleaned_data['email']
+            message = 'Hello, '+name+ ' Your details have been updated on the erp platform. If you did not initiate this request, contact our customer service.'
+            subject = 'Customer Details Update'
+            mail_data = {'email':email,'message':message,'subject':subject}
+            mail  = send_confirmation_email(mail_data)
+            messages.add_message(request, messages.INFO, mail)
             return redirect('index')
         else:
             args = {'form':form}
@@ -78,12 +85,21 @@ def update_customer(request,id):
         return render(request,'home/update-customer.html',args)
 
 
+
 @login_required(login_url='/sign-in/')
 def delete_customer(request,id):
     instance = CustomerNames.objects.get(id=id)
+    email = instance.email
+    name = instance.name
+    message = 'Hello '+name+' Your details have been deleted on the erp platform. If you did not initiate this request, please contact the customer service.'
+    subject = 'Customer Details Deletion!'
+    mail_data = {'email':email,'message':message,'subject':subject}
+    mail  = send_confirmation_email(mail_data)
+    messages.add_message(request, messages.INFO, mail)
     instance.delete()
     messages.add_message(request, messages.INFO,'Customer has been deleted successfully.')
     return redirect('index')
+
 
 
 
