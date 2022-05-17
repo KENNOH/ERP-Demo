@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'home',
     'django_tables2',
     'authentication',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +56,14 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = 'erp.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
+
 
 TEMPLATES = [
     {

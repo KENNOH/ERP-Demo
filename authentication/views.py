@@ -4,6 +4,13 @@ from django.template.context_processors import csrf
 from .forms import  UserRegistrationForm,UserLoginForm
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+from rest_framework import status, generics, filters
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.models import Token
+from .serializers import *
 
 
 def register_user(request):
@@ -63,3 +70,29 @@ def sign_out(request):
 def password_reset_complete(request):
     messages.add_message(request, messages.SUCCESS, 'You have reset your password successfully.')
     return redirect('index')
+
+
+
+class ApiAuthentication(generics.CreateAPIView):
+    serializer_class = LoginSerializer
+
+
+    def post(self,request):
+        username = request.data.get('username')
+        password = request.data.get('password')
+        user = User.objects.filter(username=username)
+        if not user:
+            return Response({'validation_error':'Invalid username or password'},status=status.HTTP_403_FORBIDDEN)
+        if user.first().check_password(password):
+            try:
+                token = Token.objects.create(user=user.first())
+            except:
+                token = Token.objects.get(user=user.first())
+            return Response({'token':token.key},status=status.HTTP_200_OK)
+        else:
+            return Response({'validation_error':'Invalid username or password'},status=status.HTTP_403_FORBIDDEN)
+
+        
+        
+            
+

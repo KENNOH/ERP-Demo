@@ -11,6 +11,13 @@ from django.db.models import Q
 from datetime import datetime
 from django.contrib.auth.decorators import login_required
 from .utils import send_confirmation_email
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import authentication, permissions
+from rest_framework import status, generics, filters
+from rest_framework.permissions import IsAuthenticated
+from .serializers import *
+from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 # Create your views here.
 
 
@@ -136,3 +143,22 @@ def search_customers(request):
         return render(request,'home/index.html',args)
     else:
         return redirect('index')
+
+
+
+class FetchCustomersView(generics.ListAPIView):
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    
+    def get(self, request):
+        queryset = CustomerNames.objects.all()
+        serializer = CustomerSerializer(queryset,many=True)
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+
+
+
+
+
