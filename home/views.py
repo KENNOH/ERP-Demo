@@ -17,7 +17,7 @@ from rest_framework import authentication, permissions
 from rest_framework import status, generics, filters
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from rest_framework.authentication import TokenAuthentication
 # Create your views here.
 
 
@@ -146,19 +146,20 @@ def search_customers(request):
 
 
 
-class FetchCustomersView(generics.ListAPIView):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
+class CustomersView(generics.ListAPIView,generics.CreateAPIView):
+    authentication_classes = [TokenAuthentication]
     permission_classes = [IsAuthenticated]
 
-    
     def get(self, request):
+        # user = request.user
         queryset = CustomerNames.objects.all()
         serializer = CustomerSerializer(queryset,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
-
-
-
-
+    def post(self, request):
+        serializer = CreateCustomerSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_201_CREATED)
 
 
