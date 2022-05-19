@@ -9,7 +9,7 @@ from rest_framework.response import Response
 from rest_framework import authentication, permissions
 from rest_framework import status, generics, filters
 from rest_framework.permissions import IsAuthenticated
-from rest_framework.authtoken.models import Token
+from rest_framework.parsers import JSONParser
 from .serializers import *
 
 
@@ -75,24 +75,16 @@ def password_reset_complete(request):
 
 class ApiAuthentication(generics.CreateAPIView):
     serializer_class = LoginSerializer
+    parser_classes = [JSONParser]
 
 
     def post(self,request):
+        serializer = LoginSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         username = request.data.get('username')
-        password = request.data.get('password')
-        user = User.objects.filter(username=username)
-        if not user:
-            return Response({'validation_error':'Invalid username or password'},status=status.HTTP_403_FORBIDDEN)
-        if user.first().check_password(password):
-            try:
-                token = Token.objects.create(user=user.first())
-            except:
-                token = Token.objects.get(user=user.first())
-            return Response({'token':token.key},status=status.HTTP_200_OK)
-        else:
-            return Response({'validation_error':'Invalid username or password'},status=status.HTTP_403_FORBIDDEN)
-
+        user = User.objects.get(username=username)
+        refresh = RefreshToken.for_user(user)
+        data = {'refresh': str(refresh),'access': str(refresh.access_token)}
+        return Response(data,status=status.HTTP_200_OK)
         
-        
-            
 

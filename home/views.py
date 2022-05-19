@@ -18,6 +18,8 @@ from rest_framework import status, generics, filters
 from rest_framework.permissions import IsAuthenticated
 from .serializers import *
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.parsers import JSONParser
+from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 # Create your views here.
 
 
@@ -147,7 +149,7 @@ def search_customers(request):
 
 
 class CustomersView(generics.ListAPIView,generics.CreateAPIView):
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [JWTTokenUserAuthentication]
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
@@ -162,4 +164,31 @@ class CustomersView(generics.ListAPIView,generics.CreateAPIView):
         serializer.save()
         return Response(serializer.data,status=status.HTTP_201_CREATED)
 
+
+
+class CustomerUpdateView(generics.UpdateAPIView,generics.DestroyAPIView):
+    authentication_classes = [JWTTokenUserAuthentication]
+    permission_classes = [IsAuthenticated]
+    parser_classes = [JSONParser]
+
+
+
+    def update(self, request,id):
+        object_instance = CustomerNames.objects.get(id=id)
+        serializer = UpdateCustomerSerializer(object_instance,data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+    def delete(self, request,id):
+        object_instance = CustomerNames.objects.get(id=id)
+        email = object_instance.email
+        name = object_instance.name
+        message = 'Hello '+name+' Your details have been deleted on the erp platform. If you did not initiate this request, please contact the customer service.'
+        subject = 'Customer Details Deletion!'
+        mail_data = {'email':email,'message':message,'subject':subject}
+        mail  = send_confirmation_email(mail_data)
+        object_instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
