@@ -20,6 +20,8 @@ from .serializers import *
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.parsers import JSONParser
 from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
+from django.conf import settings
+import requests
 # Create your views here.
 
 
@@ -192,3 +194,35 @@ class CustomerUpdateView(generics.UpdateAPIView,generics.DestroyAPIView):
         object_instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+
+
+def fetch_quote(request):
+    url  = '{}{}'.format(settings.QUOTES_BASE_URL,'qod/')
+    response = requests.get(url)
+    args = {}
+    if response.status_code == 200:        
+        data = response.json()['contents']['quotes']
+        for item in data:
+            quote = item['quote']
+            author = item['author']
+            args['quote'] = quote
+            args['author'] = author
+        return render(request,'home/show_quotes.html',args)
+    else:
+        messages.add_message(request, messages.ERROR, "An error occured fetching the data")
+        return redirect('index')
+    
+
+
+def fetch_currency_names(request):
+    url  = '{}{}'.format(settings.COIN_BASE_URL,'/v2/currencies/')
+    response = requests.get(url)
+    if response.status_code == 200:
+        data = response.json()['data']
+        args = {'data':data}
+        return render(request,'home/show_currencies.html',args)
+    else:
+        messages.add_message(request, messages.ERROR, "An error occured fetching the message")
+        return redirect('index')
+
+    

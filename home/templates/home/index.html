@@ -36,6 +36,13 @@
   <button class="btn btn-success">Sign In</button>
 </a>
 {% endif %}
+<a href="{% url 'fetch_quote' %}">
+  <button class="btn btn-info">Get Today's Motivation Message</button>
+</a>
+<a href="{% url 'fetch_currency_names' %}">
+  <button class="btn btn-primary">Get Currency Names</button>
+</a>
+
 
 {% block content %}
 

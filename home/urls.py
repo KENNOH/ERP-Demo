@@ -2,6 +2,8 @@ from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [
+    url(r'^fetch-quote/',views.fetch_quote,name='fetch_quote'),
+    url(r'^fetch-currency-names/',views.fetch_currency_names,name='fetch_currency_names'),
     url(r'^customers/',views.CustomersView.as_view(),name='get_create_customers'),
     url(r'^update-customers/(?P<id>[\w-]+)/$',views.CustomerUpdateView.as_view(),name='update_delete_customers'),
     url(r'^add-customers/',views.add_customers,name='add_customers'),
