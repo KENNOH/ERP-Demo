@@ -2,6 +2,7 @@ from django.conf.urls import url, include
 from . import views
 
 urlpatterns = [
+    url(r'^simulate-adding-customers/',views.simulate_adding_customers,name='simulate_adding_customers'),
     url(r'^fetch-quote/',views.fetch_quote,name='fetch_quote'),
     url(r'^fetch-currency-names/',views.fetch_currency_names,name='fetch_currency_names'),
     url(r'^customers/',views.CustomersView.as_view(),name='get_create_customers'),

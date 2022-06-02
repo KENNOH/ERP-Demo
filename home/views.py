@@ -22,6 +22,8 @@ from rest_framework.parsers import JSONParser
 from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 from django.conf import settings
 import requests
+from .utils import generate_jwt_token
+import json
 # Create your views here.
 
 
@@ -225,4 +227,69 @@ def fetch_currency_names(request):
         messages.add_message(request, messages.ERROR, "An error occured fetching the message")
         return redirect('index')
 
+
+
+
+
+
+def simulate_adding_customers(request):
+    # simulate_deleting_customer(request)
+    # return redirect('index')
+    payload = {'name':'michelle obama','email':'michelle001@gmail.com','phone_number':'245366789266',
+    'occupation':'STUDENT','balance':'4500','gender':'Female'}
+    auth_base_url = 'http://127.0.0.1:8000/'
+    url  = '{}{}'.format(auth_base_url,'customers/')
+    headers= {
+    "Authorization": "Bearer "+  generate_jwt_token(request), 
+    'Accept': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8'
+    }
+    response = requests.post(url,headers=headers,data=json.dumps(payload))
+    if response.status_code == 201:
+        messages.add_message(request, messages.SUCCESS, "Simulated customer data added successfully!")
+        return redirect('index')
+    else:
+        message = response.json()
+        messages.add_message(request, messages.ERROR, message)
+        return redirect('index')
+
+
+
+def simulate_updating_customers(request):
+    payload = {'name':'Michelle Obama','email':'michelleobama001@gmail.com','phone_number':'+155366789266',
+    'occupation':'CIVIL SERVANTS','balance':'75000','gender':'Female'}
+    auth_base_url = 'http://127.0.0.1:8000/'
+    url  = '{}{}'.format(auth_base_url,'update-customers/'+str(27)+"/")
+    headers= {
+    "Authorization": "Bearer "+  generate_jwt_token(request), 
+    'Accept': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8'
+    }
+    response = requests.put(url,headers=headers,data=json.dumps(payload))
+    if response.status_code == 200:
+        return messages.add_message(request, messages.INFO, "Simulated customer data updated successfully!")
+    else:
+        message = response.json()
+        return messages.add_message(request, messages.ERROR, message)
+
+
+
+def simulate_deleting_customer(request):
+    auth_base_url = 'http://127.0.0.1:8000/'
+    url  = '{}{}'.format(auth_base_url,'update-customers/'+str(27)+"/")
+    headers= {
+    "Authorization": "Bearer "+  generate_jwt_token(request), 
+    'Accept': 'application/json',
+    'Content-Type': 'application/json; charset=utf-8'
+    }
+    response = requests.delete(url,headers=headers)
+    if response.status_code == 204:
+        return messages.add_message(request, messages.INFO, "Simulated customer data deleted successfully!")
+    else:
+        message = response.json()
+        return messages.add_message(request, messages.ERROR, message)
+        
     
+
+    
+
