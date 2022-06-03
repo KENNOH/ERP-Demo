@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'authentication',
     'rest_framework',
     'rest_framework_simplejwt',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -97,6 +98,16 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
 
+
+SWAGGER_SETTINGS = {
+   'SECURITY_DEFINITIONS': {
+      'JWT': {
+            'type': 'Bearer',
+            'name': 'Authorization',
+            'in': 'header'
+      }
+   }
+}
 
 
 TEMPLATES = [

@@ -18,14 +18,34 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from django.conf.urls import url, include
+from django.conf.urls import url, include, re_path
+from rest_framework import permissions
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+
+schema_view = get_schema_view(
+   openapi.Info(
+      title="ERP API DOCUMENTATION",
+      default_version='v1',
+      description="API's EXPOSED FOR THE ERP APP",
+      terms_of_service="https://www.google.com/policies/terms/",
+      contact=openapi.Contact(email="admin@erp.com"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=[permissions.AllowAny],
+)
 
 
 """This is the main urls configuration, all the apps are connected here"""
 
 urlpatterns = [
+    # re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    re_path(r'^api-docs/swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    re_path(r'^api-docs/redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
     path('admin/', admin.site.urls),
-    # url(r'^api-auth/', include('rest_framework.urls')),
+    # url('api-docs/', include('rest_framework.urls')),
     url(r'^',include('authentication.urls')),
     url(r'^',include('home.urls')),
 ]

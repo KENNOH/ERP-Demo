@@ -11,6 +11,9 @@ from rest_framework import status, generics, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.parsers import JSONParser
 from .serializers import *
+from  drf_yasg.utils import swagger_auto_schema
+from  django.utils.decorators import method_decorator
+from rest_framework.decorators import action
 
 
 def register_user(request):
@@ -73,11 +76,22 @@ def password_reset_complete(request):
 
 
 
+
 class ApiAuthentication(generics.CreateAPIView):
     serializer_class = LoginSerializer
     parser_classes = [JSONParser]
 
 
+    @method_decorator(
+        name='post',
+        decorator=swagger_auto_schema(
+            responses= {200: 'Json object with access token and refresh token'},
+            operation_id='Generate JWT Token',
+            operation_description="""This endpoint is supposed to be used to generate a JWT token to be used for authenticating other api's in the system.
+            It accepts a json object with username and password and returns an access and a refresh token.
+            """
+        ),
+    )
     def post(self,request):
         serializer = LoginSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

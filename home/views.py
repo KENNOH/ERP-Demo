@@ -24,6 +24,11 @@ from django.conf import settings
 import requests
 from .utils import generate_jwt_token
 import json
+from  drf_yasg.utils import swagger_auto_schema
+from  django.utils.decorators import method_decorator
+from rest_framework.decorators import action
+from drf_yasg.utils import swagger_serializer_method
+from drf_yasg import openapi
 # Create your views here.
 
 
@@ -156,12 +161,36 @@ class CustomersView(generics.ListAPIView,generics.CreateAPIView):
     authentication_classes = [JWTTokenUserAuthentication]
     permission_classes = [IsAuthenticated]
 
+
+    @method_decorator(
+        name='get customers endpoint',
+        decorator=swagger_auto_schema(
+            responses= {200: CustomerSerializer(many=True)},
+            operation_id='Fetch customers',
+            operation_description="""This endpoint is supposed to be used to fetch and show customer data in the system.
+            It requires a jwt token(generated from the auth endpoint) to get the data.
+            """
+        ),
+    )
     def get(self, request):
         # user = request.user
         queryset = CustomerNames.objects.all()
         serializer = CustomerSerializer(queryset,many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
+
+
+    @method_decorator(
+        name='Add new customer endpoint',
+        decorator=swagger_auto_schema(
+            request_body = CreateCustomerSerializer,
+            responses= {201: CreateCustomerSerializer(),400: CreateCustomerSerializer()},
+            operation_id='Add new customers',
+            operation_description="""This endpoint is supposed to be used to create and show created customer data in the system.
+            It requires a jwt token(generated from the auth endpoint) to use the endpoint.
+            """
+        ),
+    )
     def post(self, request):
         serializer = CreateCustomerSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -176,8 +205,18 @@ class CustomerUpdateView(generics.UpdateAPIView,generics.DestroyAPIView):
     parser_classes = [JSONParser]
 
 
-
-    def update(self, request,id):
+    @method_decorator(
+        name='Update new customer endpoint',
+        decorator=swagger_auto_schema(
+            request_body=UpdateCustomerSerializer,
+            responses= {200: UpdateCustomerSerializer(),400: UpdateCustomerSerializer()},
+            operation_id='Update existing customers',
+            operation_description="""This endpoint is supposed to be used to update and show existing customer data in the system.
+            It requires a jwt token(generated from the auth endpoint) to use the endpoint and a customer id passed thought the url.
+            """
+        ),
+    )
+    def put(self, request,id):
         object_instance = CustomerNames.objects.get(id=id)
         serializer = UpdateCustomerSerializer(object_instance,data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -185,6 +224,16 @@ class CustomerUpdateView(generics.UpdateAPIView,generics.DestroyAPIView):
         return Response(serializer.data,status=status.HTTP_200_OK)
 
 
+    @method_decorator(
+        name='Delete customer endpoint',
+        decorator=swagger_auto_schema(
+            responses= {204:''},
+            operation_id='Delete existing customer',
+            operation_description="""This endpoint is supposed to be used to delete existing customer data in the system.
+            It requires a jwt token(generated from the auth endpoint) to use the endpoint and a customer id passed thought the url.
+            """
+        ),
+    )
     def delete(self, request,id):
         object_instance = CustomerNames.objects.get(id=id)
         email = object_instance.email
@@ -195,6 +244,7 @@ class CustomerUpdateView(generics.UpdateAPIView,generics.DestroyAPIView):
         mail  = send_confirmation_email(mail_data)
         object_instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 
 
