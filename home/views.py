@@ -1,4 +1,6 @@
 from ast import keyword
+import imp
+from urllib import response
 from django.shortcuts import redirect, render
 from .models import CustomerNames
 from .tables import CustomerTable
@@ -22,13 +24,15 @@ from rest_framework.parsers import JSONParser
 from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 from django.conf import settings
 import requests
-from .utils import generate_jwt_token
+from .utils import generate_jwt_token, generate_excel_csv, generate_excel_xlsx
 import json
 from  drf_yasg.utils import swagger_auto_schema
 from  django.utils.decorators import method_decorator
 from rest_framework.decorators import action
 from drf_yasg.utils import swagger_serializer_method
 from drf_yasg import openapi
+import csv 
+from django.http import HttpResponse
 # Create your views here.
 
 
@@ -129,6 +133,12 @@ def search_customers(request):
         Q(phone_number__icontains=search_keyword) | Q(occupation__icontains=search_keyword)| Q(balance__icontains=search_keyword)
         ).order_by('-created_on')
 
+        if 'csv-format' in request.GET:
+            return generate_excel_csv(searched_queryset)
+
+        if 'xlsx-format' in request.GET:
+            return generate_excel_xlsx(searched_queryset)
+
         """Date search"""
         # converted_keyword = datetime.strptime(search_keyword, '%m %d %Y')
         # searched_queryset = CustomerNames.objects.all().filter(created_on__gte=converted_keyword)
@@ -150,7 +160,6 @@ def search_customers(request):
         page_number = request.GET.get('page')
         paginator_module = paginator.get_page(page_number)
         args = {'paginator_module':paginator_module,'search_keyword':search_keyword}
-
         return render(request,'home/index.html',args)
     else:
         return redirect('index')
