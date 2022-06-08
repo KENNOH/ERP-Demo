@@ -1,4 +1,6 @@
 import imp
+from multiprocessing import context
+from urllib import response
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
@@ -11,6 +13,13 @@ from openpyxl import Workbook
 from openpyxl.styles import Font, Alignment, Border, Side, PatternFill
 from openpyxl.utils import get_column_letter
 from openpyxl.styles.colors import BLACK, BLUE
+import reportlab 
+import io
+from django.http import FileResponse
+from reportlab.pdfgen import canvas
+from  xhtml2pdf import pisa
+from  django.template.loader import get_template
+
 
 
 
@@ -145,7 +154,34 @@ def generate_excel_xlsx(searched_queryset):
 
 
 
-    
+def generate_reportlab_pdf(request):
+    buffer = io.BytesIO()
+    p = canvas.Canvas(buffer)
+    p.drawString(100, 100, "Hello world.")
+    p.showPage()
+    p.save()
+    buffer.seek(0)
+    return FileResponse(buffer, as_attachment=True, filename='hello.pdf')
+
+
+
+def render_to_pdf(template_src,context_dict):
+    template = get_template(template_src)
+    html  = template.render(context_dict)
+    result = io.BytesIO()
+    pdf = pisa.pisaDocument(io.BytesIO(html.encode('ISO-8859-1')), result)
+    pdf = result.getvalue()
+    return pdf
+
+
+def generate_pdf(request,searched_queryset):
+    context_dict = {'searched_queryset':searched_queryset,}
+    pdf = render_to_pdf('home/pdf_template.html',context_dict)
+    if pdf:
+        response = HttpResponse(pdf, content_type='application/pdf')
+        content = "attachment; filename='Erp_customers.pdf'"
+        response['Content-Disposition'] = content
+        return response
 
 
 

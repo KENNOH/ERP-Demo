@@ -14,6 +14,7 @@ from .serializers import *
 from  drf_yasg.utils import swagger_auto_schema
 from  django.utils.decorators import method_decorator
 from rest_framework.decorators import action
+import reportlab
 
 
 def register_user(request):

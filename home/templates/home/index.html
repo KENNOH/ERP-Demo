@@ -82,6 +82,7 @@
   <button type="submit" class="btn btn-info">Submit</button>
   <button type="submit" name="csv-format" class="btn btn-warning">Export to CSV</button>
   <button type="submit" name="xlsx-format" class="btn btn-warning">Export to XLSX</button>
+  <button type="submit" name="pdf-format" class="btn btn-danger">Export to pdf</button>
 </form>
 <br>
 <a href="{% url 'add_customers' %}">
@@ -126,7 +127,7 @@
       </tr>
     {% endfor %}
     </tbody>
-  </table>
+</table>
   <div class="pagination">
     <span class="step-links">
         {% if paginator_module.has_previous %}

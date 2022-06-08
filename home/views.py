@@ -24,7 +24,7 @@ from rest_framework.parsers import JSONParser
 from rest_framework_simplejwt.authentication import JWTTokenUserAuthentication
 from django.conf import settings
 import requests
-from .utils import generate_jwt_token, generate_excel_csv, generate_excel_xlsx
+from .utils import generate_jwt_token, generate_excel_csv, generate_excel_xlsx, generate_reportlab_pdf, generate_pdf
 import json
 from  drf_yasg.utils import swagger_auto_schema
 from  django.utils.decorators import method_decorator
@@ -124,7 +124,6 @@ def delete_customer(request,id):
 
 
 
-
 def search_customers(request):
     search_keyword = request.GET['customer_search']
     if search_keyword != '':
@@ -138,6 +137,11 @@ def search_customers(request):
 
         if 'xlsx-format' in request.GET:
             return generate_excel_xlsx(searched_queryset)
+
+        if 'pdf-format' in request.GET:
+            return generate_pdf(request,searched_queryset)
+            # return generate_reportlab_pdf(searched_queryset)
+        
 
         """Date search"""
         # converted_keyword = datetime.strptime(search_keyword, '%m %d %Y')

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Customer Report </title>
+        <style>
+            @page {
+                size: letter landscape;
+                margin: 2cm;
+            }
+            table { -pdf-keep-with-next: true; }
+
+            @page  {
+                size: a3;
+                background-image: url('home/erp.png');
+            }
+
+        </style>
+    </head>
+    <body>
+        <div>
+            <center>
+                <img src="http://127.0.0.1:8000/static/erp.png" width="250" height="120">
+            </center>
+        </div>
+        <table class="table table-striped">
+            <thead>
+              <tr>
+                <th scope="col">Number</th>
+                <th scope="col">Name</th>
+                <th scope="col">Email</th>
+                <th scope="col">Balance</th>
+                <th scope="col">Gender</th>
+                <th scope="col">Occupation</th>
+                <th scope="col">Phone Number</th>
+                <th scope="col">Created On</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for customer in searched_queryset %}
+              <tr>
+                <th scope="row">{{customer.id}}</th>
+                <td>{{customer.name}}</td>
+                <td>{{customer.email}}</td>
+                <td>{{customer.balance}}</td>
+                <td>{{customer.gender}}</td>
+                <td>{{customer.occupation}}</td>
+                <td>{{customer.phone_number}}</td>
+                <td>{{customer.created_on}}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </body>
+</html>
+
