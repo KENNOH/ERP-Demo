@@ -1,5 +1,3 @@
-from dataclasses import fields
-from select import select
 from rest_framework import serializers
 from .models import CustomerNames
 from .utils import send_confirmation_email
