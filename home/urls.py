@@ -11,7 +11,7 @@ urlpatterns = [
     url(r'^update-customer/(?P<id>[\w-]+)/$',views.update_customer,name='update_customer'),
     url(r'^delete-customer/(?P<id>[\w-]+)/$',views.delete_customer,name='delete_customer'),
     url(r'^search-customers/',views.search_customers,name='search_customers'),
-    url(r'^',views.index,name='index'),
+    url(r'^$',views.index,name='index'),
 ]
 
 
